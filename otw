@@ -1,5 +1,3 @@
-#!/bin/bash
-
 setup_wechall() {
     echo "Setting up WeChall..."
 
@@ -9,9 +7,8 @@ setup_wechall() {
     echo -n "WeChall Token: "
     read WECHALLTOKEN
 
-    echo '#!/bin/sh' > ~/.wechall
-    echo "WECHALLUSER=\"$WECHALLUSER\"" >> ~/.wechall
-    echo "WECHALLTOKEN=\"$WECHALLTOKEN\"" >> ~/.wechall
+    echo "export WECHALLUSER=\"$WECHALLUSER\"" >> ~/.wechall
+    echo "export WECHALLTOKEN=\"$WECHALLTOKEN\"" >> ~/.wechall
     echo "Configuration stored in ~/.wechall"
 
     # Reload
@@ -20,7 +17,7 @@ setup_wechall() {
 
 otw() {
     # Check for sshpass
-    command -v sshpass
+    command -v sshpass >/dev/null
     if [ $? -ne 0 ]; then
         echo "You need to install sshpass for this program to work."
         return
@@ -36,8 +33,8 @@ otw() {
 
     # Check that a valid level was given
     if [[ ! "$1" =~ '[a-z]+[0-9]+' ]]; then
-        echo "Please enter a SSH-capable OverTheWire level in the format $GAME$LEVEL"
-        echo "For example: bandit0, leviathan2, manpage4"
+        echo 'Please enter a SSH-capable OverTheWire level in the format $GAME$LEVEL'
+        echo 'For example: bandit0, leviathan2, manpage4'
         return
     fi
 
@@ -49,7 +46,7 @@ otw() {
 
     # Try to get the password entry from the .otwpass file
     # If it exists, compact the spacing down to a single space
-    PASS_STRING="`grep -E "$GAME$LEVEL +[a-zA-Z0-9]+" ~/.otwpass | sed -r 's/ +/ /'`"
+    PASS_STRING="`grep -E "$GAME$LEVEL +[a-zA-Z0-9]+" ~/.otwpass | sed -r 's/[ \t]+/ /'`"
 
     # Extract the password
     # From the .otwpass file
@@ -69,6 +66,10 @@ otw() {
     COMMAND=""
     if [ -n "$1" ]; then
         if [[ "$1" == "wechall" ]]; then
+            if [ -z "$WECHALLUSER" ] || [ -z "$WECHALLTOKEN" ]; then
+                echo 'You must set WECHALLUSER and WECHALLTOKEN.  Please run setup_wechall and try again.'
+                return
+            fi
             COMMAND="wechall; exit"
         fi
     fi
@@ -89,6 +90,7 @@ otw() {
     fi
 }
 
+# Load WeChall credentials (if they exist)
 if [ -e ~/.wechall ]; then
     source ~/.wechall
 fi
