@@ -90,7 +90,6 @@ otw() {
     fi
 }
 
-# Load WeChall credentials (if they exist)
 if [ -e ~/.wechall ]; then
     source ~/.wechall
 fi
