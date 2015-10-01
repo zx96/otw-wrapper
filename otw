@@ -32,7 +32,7 @@ otw() {
     fi
 
     # Check that a valid level was given
-    if [[ ! "$1" =~ '[a-z]+[0-9]+' ]]; then
+    if [[ ! "$1" =~ ^[a-z]+[0-9]+$ ]]; then
         echo 'Please enter a SSH-capable OverTheWire level in the format $GAME$LEVEL'
         echo 'For example: bandit0, leviathan2, manpage4'
         return
@@ -58,7 +58,7 @@ otw() {
         shift
     # Whoops, couldn't get a password.  Oh well.
     else
-        echo "Please provide a password for $GAME$LEVEL: $0 $GAME$LEVEL <password>"
+        echo "Please provide a password for $GAME$LEVEL: otw $GAME$LEVEL <password>"
         return
     fi
 
@@ -90,6 +90,7 @@ otw() {
     fi
 }
 
+# Load WeChall credentials (if they exist)
 if [ -e ~/.wechall ]; then
     source ~/.wechall
 fi
